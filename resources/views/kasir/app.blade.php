@@ -3,7 +3,7 @@
 
 <head>
 
-    @include('kasir.component.header')    
+    @include('kasir.component.header')
 
 </head>
 

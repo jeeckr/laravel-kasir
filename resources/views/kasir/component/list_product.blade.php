@@ -54,6 +54,7 @@
 
     .card-product {
         box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2), 0 6px 20px 0 rgba(0, 0, 0, 0.19);
+        width: 70%;
     }
 
     .column-btn-add {
@@ -86,107 +87,137 @@
 </style>
 @endsection
 
-<div class="card card-product">
+<div class="card card-product ml-3 mr-3">
     <div class="card-header card-header-product">
         <div class="row">
-            <div class="col-md-6">
-                <b class="text-primary">Daftar Menu</b>
+            <div class="col-md-6 pt-1">
+                <h5> <b class="text-primary">Daftar Menu</b></h5>
             </div>
             <div class="col-md-6">
-                <form class="form-inline my-2 my-lg-0 form-search">
+                <form class="form-inline my-2 my-lg-0" action="#">
                     @csrf
-                    <input class="form-control mr-sm-2 search-input" name="cari" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-primary btn-search" type="submit"><i class="fa fa-search" aria-hidden="true"></i>
-                    </button>
+                    <!-- <input class="form-control mr-sm-2" name="cari" type="search" placeholder="Cari" aria-label="Search" id="product_search" style="border-radius: 55px; height: 2rem"> -->
+                    <input class="form-control mr-sm-2" name="fcari" placeholder="Cari" aria-label="Search" id="fsearch" style="border-radius: 55px; height: 2rem">
+                    <!-- <button class="btn btn-primary btn-search" type="submit"><i class="fa fa-search" aria-hidden="true"></i>
+                    </button> -->
                 </form>
             </div>
         </div>
     </div>
 
-    <div class="test"></div>
     <div class="card-body overflow-auto card-list-product">
         <div class="container">
-            <div class="row">
+            <div class="row" id="item-product">
+                <!-- <input type="text" id="value_product"> -->
+
                 @foreach($products as $data)
-
-                <!-- <div class="card card-item-product shadow-sm p-3 bg-white rounded">
-                    <div class="card-body card-body-list-product">
-
-                        <div class="row">
-                            <div class="col-md-4">
-                                <img src="{{ $data->showImage() }}" class="card-img-left img-product img-thumbnail" alt="...">
-                            </div>
-                            <div class="col-md-6">
-                                <div class="description-product">
-                                    <div class="card-title">
-                                        <h5> {{ $data->name }}</h5>
-                                    </div>
-                                    <div class="card-price">
-                                        Rp. {{ $data->price }}
-                                    </div>
-                                </div>
-                            </div>
-                            <div class="col-md-1">
-                                <div class="column-btn-add">
-
-                                    <a href="#" data-id="{{ $data->id }}" class="add-cart"><i class="fa fa-plus-square-o fa-2x " aria-hidden="true"></i></a>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    </div>
-                </div> -->
-
-                <div class="card" style="height: 100px;width: 32%; margin:5px;">
-                    <div class="card-horizontal">
-                        <div class="img-square-wrapper">
-                            <img class="" src="{{ $data->showImage() }}" alt="Card image cap" style="width: 100px; height:100px;">
-                        </div>
-                        <div class="card-body p-0">
-                            <div class="description pl-2">
-                                <h5 class="card-title m-0 pt-3">{{ $data->name }}</h5>
-
-                            </div>
-                            <div class="button pl-2 pt-1">
-                                <div class="row pl-3 mt-3">
-                                    <div class="col pl-0">
-                                        <h6 class="m-0 pt-1">Rp. 5000</h6>
-                                    </div>
-                                    <div class="col ">
-                                        <a href="" class="btn btn-primary btn-biasa">+</a>
-                                        <a href="" class="btn btn-success btn-gojek">+</a>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        </div>
-                    </div>
-                </div>
-
-
+                @include('kasir.component.item_product')
                 @endforeach
             </div>
         </div>
     </div>
 </div>
 
-<div class="button-group">
-    <button class="btn btn-primary"><i class="fa fa-plus-square-o fa-2x " aria-hidden="true"></i> </button>
-</div>
 
 
 
 @section('js')
-<!-- <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script> -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.3/js/select2.min.js"></script>
-<script>
-    $(".add-cart").on('click', function() {
-        console.log($(this).data('id'));
+<script src="https://code.jquery.com/jquery-migrate-3.0.0.min.js"></script>
+<script src="http://code.jquery.com/ui/1.10.2/jquery-ui.js"></script>
 
-        var id = $(this).data('id');
+<script>
+    function add_cart(e) {
+        console.log(e.getAttribute('data-id'));
+
+        var id = e.getAttribute('data-id');
         var url = '/kasir/employee/dashboard';
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: "POST",
+            url: url,
+            data: {
+                id: id
+            },
+            success: function(data) {
+                console.log(data.total);
+                let cek = document.getElementById("data-product");
+                cek.innerHTML = data.html;
+
+                let total = document.getElementById("total_checkout");
+                total.innerHTML = data.total;
+            },
+            error: function(data) {
+                console.log('Error:', data);
+
+            }
+        });
+    }
+
+    function add_qty(e) {
+        // console.log(e.getAttribute('data-id'));
+        var id = e.getAttribute('data-id');
+        // var id = $(this).data('id');
+        var url = "/kasir/employee/dashboard/add_qty/";
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: "POST",
+            url: url,
+            data: {
+                id: id
+            },
+            success: function(data) {
+                let cek = document.getElementById("data-product");
+                cek.innerHTML = data.html;
+
+                let total = document.getElementById("total_checkout");
+                total.innerHTML = data.total;
+            },
+            error: function(data) {
+                console.log('Error:', data);
+
+            }
+        });
+        // });
+    }
+
+    function min_qty(e) {
+        var id = e.getAttribute('data-id');
+        var url = "/kasir/employee/dashboard/min_qty/";
+
+        $.ajax({
+            headers: {
+                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+            },
+            type: "POST",
+            url: url,
+            data: {
+                id: id
+            },
+            success: function(data) {
+                let cek = document.getElementById("data-product");
+                cek.innerHTML = data.html;
+
+                let total = document.getElementById("total_checkout");
+                total.innerHTML = data.total;
+            },
+            error: function(data) {
+                console.log('Error:', data);
+
+            }
+        });
+        // });
+    }
+
+    function delete_item(e) {
+
+        var id = e.getAttribute('data-id');
+        var url = "/kasir/employee/dashboard/delete_item/";
 
         $.ajax({
             headers: {
@@ -201,37 +232,55 @@
                 console.log(data);
                 let cek = document.getElementById("data-product");
                 cek.innerHTML = data.html;
+
+                let total = document.getElementById("total_checkout");
+                total.innerHTML = data.total;
             },
             error: function(data) {
                 console.log('Error:', data);
 
             }
         });
-    });
+    }
 
-    $('.search-input').on('keyup', function() {
-        $value = $(this).val();
-        // console.log($value);
+    document.getElementById('fsearch').addEventListener('input', onInput);
 
-        $.ajax({
-            headers: {
-                'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
-            },
-            url: '/kasir/employee/dashboard/search',
-            dataType: 'json',
-            type: 'POST',
-            // delay: 250,
-            data: {
-                'search': $value
-            },
-            success: function(data) {
-                console.log("success");
-                $('.test').html(data);
-            },
-            error: function(data) {
-                console.log(data);
-            }
-        });
-    });
+    function onInput() {
+        let duration = 800;
+        clearTimeout(this._timer);
+        this._timer = setTimeout(() => {
+            var url = "/kasir/employee/dashboard/search";
+            console.log(this.value);
+
+            $.ajax({
+                headers: {
+                    'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                },
+                url: url,
+                type: "POST",
+                data: {
+                    search: this.value
+                },
+                success: function(data) {
+
+                    console.log(data);
+
+                    let cek = document.getElementById("item-product");
+                    console.log(cek.innerHTML);
+
+                    cek.innerHTML = data;
+
+
+                    // reset listener
+
+                    // response(data);
+                },
+                error: function(data) {
+                    console.log('Error:', data);
+
+                }
+            })
+        }, duration);
+    }
 </script>
 @endsection

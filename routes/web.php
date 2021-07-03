@@ -42,10 +42,17 @@ Route::group(['prefix' => 'admin',  'middleware' => ['admin']], function () {
 Route::group(['prefix' => 'kasir',  'middleware' => ['employee']], function () {
     Route::get('/employee/dashboard/', 'Employee\DashboardController@index')->name('dashboard_employee');
     Route::post('/employee/dashboard/', 'Employee\DashboardController@store')->name('store_employee');
+    Route::post('/employee/dashboard/add_qty', 'Employee\DashboardController@add_qty')->name('add_qty');
+    Route::post('/employee/dashboard/min_qty', 'Employee\DashboardController@min_qty')->name('min_qty');
+    Route::post('/employee/dashboard/delete_item/', 'Employee\DashboardController@delete_item')->name('delete_item');
+    // Route::post('/employee/dashboard/search', 'Employee\DashboardController@search_item')->name('search_item');
+
+    Route::post('/employee/dashboard/search', 'Employee\DashboardController@get_item')->name('get_item');
+
 
     Route::post('/employee/dashboard/order/', 'Employee\OrderController@store')->name('order');
 
-    Route::get('/employee/dashboard/search', 'Employee\DashboardController@search')->name('search');
+    // Route::get('/employee/dashboard/search/', 'Employee\DashboardController@search')->name('search');
 
     // Route::get('/{any}', function () {
     //     return view('welcome');

@@ -65,6 +65,7 @@ class OrderController extends Controller
         }
 
         session()->forget('cart');
+        session()->forget('total');
 
         return redirect()->route('dashboard_employee');
     }
